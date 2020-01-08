@@ -38,7 +38,7 @@ const getOptions = (
   target: BroilerplateTarget,
   configFilePath: string,
   isDebug: boolean
-) => {
+): object => {
   return {
     babelrc: false,
     presets: [
