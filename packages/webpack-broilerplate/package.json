@@ -6,7 +6,7 @@
   "name": "@dr-kobros/webpack-broilerplate",
   "version": "0.1.6",
   "main": "dist/index.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
     "ramda": "^0.26.1",
