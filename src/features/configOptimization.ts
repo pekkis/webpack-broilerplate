@@ -1,6 +1,6 @@
 import { mergeDeepRight, over, lensPath } from "ramda";
 import { BroilerplateContext } from "../index";
-import webpack = require("webpack");
+import webpack from "webpack";
 
 const defaultConfig: Partial<webpack.Options.Optimization> = {
   splitChunks: {

@@ -13,5 +13,5 @@ test("creates babel ruleset", () => {
 
   const bp2 = babel()(bp);
 
-  console.log(util.inspect(bp2, true, 999));
+  // console.log(util.inspect(bp2, true, 999));
 });

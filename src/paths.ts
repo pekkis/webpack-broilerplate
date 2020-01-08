@@ -10,7 +10,7 @@ export const pathsFromRootPath = (rootPath: string): BroilerplatePaths => ({
 
 export const setPaths = (newPaths: Partial<BroilerplatePaths>) => (
   bp: BroilerplateContext
-) => {
+): BroilerplateContext => {
   return over(
     lensProp("paths"),
     oldPaths => mergeRight(oldPaths, newPaths),

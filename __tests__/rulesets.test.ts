@@ -1,24 +1,24 @@
-2import broilerplate from "../src";
+import broilerplate from "../src";
 import { compose } from "ramda";
-import { LoaderDefinition, addLoader, updateLoader } from "../src/loaders";
+import { RulesetDefinition, addRuleset, updateLoader } from "../src/rulesets";
 
 test("adds a loader", () => {
-  const definition: LoaderDefinition = {
+  const definition: RulesetDefinition = {
     factory: () => {
       return {};
     }
   };
 
-  const bp = compose(addLoader(definition))(broilerplate("development"));
+  const bp = compose(addRuleset(definition))(broilerplate("development"));
 
-  expect(bp.loaders.length).toEqual(1);
-  expect(bp.loaders[0]).toBe(definition);
+  expect(bp.rulesets.length).toEqual(1);
+  expect(bp.rulesets[0]).toBe(definition);
 });
 
 test("modifies a loader", () => {
   const id = Symbol("puuppa");
 
-  const definition: LoaderDefinition = {
+  const definition: RulesetDefinition = {
     identifier: id,
     factory: () => {
       return {};
@@ -28,7 +28,7 @@ test("modifies a loader", () => {
     }
   };
 
-  const definition2: LoaderDefinition = {
+  const definition2: RulesetDefinition = {
     identifier: Symbol("puupero"),
     factory: () => {
       return {};
@@ -39,18 +39,15 @@ test("modifies a loader", () => {
   };
 
   const bp = broilerplate("development");
-  const bp2 = compose(
-    addLoader(definition),
-    addLoader(definition2)
-  )(bp);
+  const bp2 = compose(addRuleset(definition), addRuleset(definition2))(bp);
 
-  expect(bp2.loaders.length).toBe(2);
+  expect(bp2.rulesets.length).toBe(2);
 
   const mock = jest.fn(l => l);
 
   const bp3 = updateLoader(l => l.identifier === id, mock, bp2);
 
-  expect(bp3.loaders.length).toBe(2);
+  expect(bp3.rulesets.length).toBe(2);
   expect(bp3).not.toBe(bp2);
   expect(mock).toHaveBeenCalledWith(definition);
   expect(mock).toHaveBeenCalledTimes(1);
@@ -61,7 +58,7 @@ test("not found does not modify anything", () => {
 
   const notFoundId = Symbol("notfound");
 
-  const definition: LoaderDefinition = {
+  const definition: RulesetDefinition = {
     identifier: id,
     factory: () => {
       return {};
@@ -72,7 +69,7 @@ test("not found does not modify anything", () => {
   };
 
   const bp = broilerplate("development");
-  const bp2 = addLoader(definition)(bp);
+  const bp2 = addRuleset(definition)(bp);
 
   const mock = jest.fn(l => l);
 
@@ -80,6 +77,5 @@ test("not found does not modify anything", () => {
   expect(mock).not.toHaveBeenCalled();
 
   expect(bp3).not.toBe(bp2);
-  expect(bp2.loaders).toBe(bp3.loaders);
-
+  expect(bp2.rulesets).toBe(bp3.rulesets);
 });

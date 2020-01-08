@@ -16,7 +16,8 @@
     "isolatedModules": true,
     "allowJs": true,
     "declarationDir": "dist/types",
-    "declaration": true
+    "declaration": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["**/*"]
 }

@@ -1,15 +1,12 @@
 module.exports = {
   roots: ["<rootDir>"],
   testMatch: ["**/?(*.)+(spec|test).+(ts|tsx|js)"],
+  /*
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
-    "^.+\\.jsx?$": "babel-jest"
+    // "^.+\\.(ts|tsx)$": "ts-jest",
+    // "^.+\\.(j|t)sx?$": "babel-jest"
   },
-  globals: {
-    "ts-jest": {
-      diagnostics: false,
-      babelConfig: true
-    }
-  },
+  */
+  globals: {},
   verbose: true
 };

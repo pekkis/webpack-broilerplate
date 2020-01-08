@@ -15,5 +15,5 @@ test("initializes webpack", () => {
 
   const config = build(bp);
 
-  console.log(util.inspect(config, true, 999));
+  // console.log(util.inspect(config, true, 999));
 });

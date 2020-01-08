@@ -6,9 +6,9 @@ import {
   BroilerplateMode,
   BroilerplateTarget
 } from "../index";
-import { addLoader, LoaderDefinition } from "../loaders";
+import { addRuleset, RulesetDefinition } from "../rulesets";
 
-const getBrowsers = (configFilePath: string) => {
+const getBrowsers = (configFilePath: string): string[] => {
   const browserFile = fs.readFileSync(
     path.resolve(configFilePath, ".browserslistrc"),
     {
@@ -71,8 +71,8 @@ const getOptions = (
 
 export const identifier = Symbol("babelFeature");
 
-const babelFeature = () => (bp: BroilerplateContext) => {
-  const babelDefinition: LoaderDefinition = {
+const babelFeature = () => (bp: BroilerplateContext): BroilerplateContext => {
+  const babelDefinition: RulesetDefinition = {
     identifier,
     factory: () => {
       return {
@@ -88,7 +88,7 @@ const babelFeature = () => (bp: BroilerplateContext) => {
     }
   };
 
-  const feature = pipe(addLoader(babelDefinition));
+  const feature = pipe(addRuleset(babelDefinition));
   return feature(bp);
 };
 

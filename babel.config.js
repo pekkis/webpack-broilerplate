@@ -1,5 +1,6 @@
 module.exports = api => {
-  api.cache(true);
+  // api.cache.using(() => process.env.NODE_ENV);
+  api.cache.never();
 
   return {
     presets: [
@@ -11,7 +12,7 @@ module.exports = api => {
           targets: {
             node: 10
           },
-          modules: false
+          modules: "auto"
         }
       ],
       "@babel/preset-typescript"

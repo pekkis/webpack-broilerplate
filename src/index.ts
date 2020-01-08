@@ -1,5 +1,5 @@
-import webpack = require("webpack");
-import R, {
+import webpack from "webpack";
+import {
   lensPath,
   lensProp,
   compose,
@@ -11,7 +11,7 @@ import R, {
   set
 } from "ramda";
 import { buildPlugin, PluginDefinition } from "./plugins";
-import { buildLoader, LoaderDefinition } from "./loaders";
+import { buildRuleset, RulesetDefinition } from "./rulesets";
 import { pathsFromRootPath } from "./paths";
 
 export type BroilerplateMode = "development" | "production";
@@ -21,8 +21,8 @@ export type BroilerplateTarget = "client" | "server";
 export const broilerPlateSymbol = Symbol("broilerplate");
 
 export interface AddableDefinition {
-  priority?: Number;
-  identifier?: Symbol;
+  priority?: number;
+  identifier?: symbol;
   factory: (options: any) => any;
   config?: any;
 }
@@ -40,7 +40,7 @@ export interface BroilerplateContext {
   mode: BroilerplateMode;
   target: BroilerplateTarget;
   plugins: Array<PluginDefinition>;
-  loaders: Array<LoaderDefinition>;
+  rulesets: Array<RulesetDefinition>;
   config: Partial<webpack.Configuration>;
   paths: BroilerplatePaths;
   debug: boolean;
@@ -60,7 +60,7 @@ export default function broilerplate(
     mode,
     target,
     plugins: [],
-    loaders: [],
+    rulesets: [],
     config: {},
     debug: false,
     paths: pathsFromRootPath(rootPath)
@@ -76,29 +76,24 @@ export const setDebug = curry((value: boolean, bp: BroilerplateContext) => {
 export const addEntrypoint = curry(
   (name: string, file: string, bp: BroilerplateContext) => {
     const lens = compose(entryPointsLens, lensProp(name)) as Lens;
-    return R.set(lens, file, bp);
+    return set(lens, file, bp);
   }
 );
 
-export const removeEntrypoint = curry(
-  (name: string, bp: BroilerplateContext) => {
-    return R.set(R.lensPath(["entry", name]), undefined, bp);
-  }
+export const removeEntrypoint = curry((name, bp) =>
+  set(lensPath(["entry", name]), undefined, bp)
 );
 
 export const addDefinition = curry(
-  (lens: Lens, definition: AddableDefinition, bp: BroilerplateContext) => {
-    return over(lens, definitionList => append(definition, definitionList), bp);
-  }
+  (lens: Lens, definition: AddableDefinition, bp: BroilerplateContext) =>
+    over(lens, definitionList => append(definition, definitionList), bp)
 );
 
-export const build = (bp: BroilerplateContext): webpack.Configuration => {
-  return {
-    ...bp.config,
-    mode: bp.mode,
-    plugins: map(buildPlugin, bp.plugins),
-    module: {
-      rules: map(buildLoader, bp.loaders)
-    }
-  };
-};
+export const build = (bp: BroilerplateContext): webpack.Configuration => ({
+  ...bp.config,
+  mode: bp.mode,
+  plugins: map(buildPlugin, bp.plugins),
+  module: {
+    rules: map(buildRuleset, bp.rulesets)
+  }
+});

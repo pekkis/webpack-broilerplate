@@ -3,7 +3,7 @@ import { BroilerplateContext, addDefinition, AddableDefinition } from ".";
 import { Plugin } from "webpack";
 
 export interface PluginDefinition extends AddableDefinition {
-  factory: (options: any) => Plugin;
+  factory: (options: unknown) => Plugin;
 }
 
 export const addPlugin = curry(
