@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@dr-kobros/webpack-broilerplate",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "license": "MIT",
@@ -17,6 +17,7 @@
     "rimraf": "^3.0.0"
   },
   "scripts": {
+    "prepare": "yarn run build",
     "clean": "rimraf dist",
     "prebuild": "tsc && yarn run clean",
     "build": "BABEL_ENV=build babel src --out-dir dist --source-maps --extensions .ts,.tsx --delete-dir-on-start --config-file ../../babel.config.js --no-comments",
