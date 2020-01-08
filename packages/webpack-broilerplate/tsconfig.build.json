@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "outFile": "./dist/index.d.ts",
-    // "declarationDir": "./dist",
+    // "outFile": "./dist/index.d.ts",
+    "declarationDir": "./dist",
     "rootDir": "./src",
     "baseUrl": "./"
   },
