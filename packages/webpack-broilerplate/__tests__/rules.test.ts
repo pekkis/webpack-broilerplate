@@ -1,6 +1,6 @@
 import broilerplate from "../src";
 import { compose } from "ramda";
-import { RuleDefinition, addRule, updateLoader } from "../src/rules";
+import { RuleDefinition, addRule, updateRule } from "../src/rules";
 
 test("adds a loader", () => {
   const definition: RuleDefinition = {
@@ -45,7 +45,7 @@ test("modifies a loader", () => {
 
   const mock = jest.fn(l => l);
 
-  const bp3 = updateLoader(l => l.identifier === id, mock, bp2);
+  const bp3 = updateRule(l => l.identifier === id, mock, bp2);
 
   expect(bp3.rules.length).toBe(2);
   expect(bp3).not.toBe(bp2);
@@ -73,7 +73,7 @@ test("not found does not modify anything", () => {
 
   const mock = jest.fn(l => l);
 
-  const bp3 = updateLoader(l => l.identifier === notFoundId, mock, bp2);
+  const bp3 = updateRule(l => l.identifier === notFoundId, mock, bp2);
   expect(mock).not.toHaveBeenCalled();
 
   expect(bp3).not.toBe(bp2);

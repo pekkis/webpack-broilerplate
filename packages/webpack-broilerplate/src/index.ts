@@ -1,4 +1,4 @@
-import webpack from "webpack";
+import webpack, { Plugin, RuleSetRule } from "webpack";
 import {
   lensPath,
   lensProp,
@@ -8,11 +8,17 @@ import {
   append,
   map,
   curry,
-  set
+  set,
+  ifElse,
+  always,
+  Arity1Fn,
+  nthArg
 } from "ramda";
-import { buildPlugin, PluginDefinition } from "./plugins";
-import { buildRule, RuleDefinition } from "./rules";
+import { buildPlugin } from "./plugins";
+import { buildRule } from "./rules";
 import { pathsFromRootPath } from "./paths";
+
+export { pipe } from "ramda";
 
 export type BroilerplateMode = "development" | "production";
 
@@ -28,6 +34,8 @@ export interface AddableDefinition {
 }
 
 export const entryPointsLens = lensPath(["config", "entry"]);
+export const contextLens = lensPath(["config", "context"]);
+export const devtoolLens = lensPath(["config", "devtool"]);
 
 export interface BroilerplatePaths {
   root: string;
@@ -46,6 +54,14 @@ export interface BroilerplateContext {
   debug: boolean;
 }
 
+export interface RuleDefinition extends AddableDefinition {
+  factory: (config: unknown) => RuleSetRule;
+}
+
+export interface PluginDefinition extends AddableDefinition {
+  factory: (options: unknown) => Plugin;
+}
+
 export default function broilerplate(
   mode: BroilerplateMode,
   target: BroilerplateTarget = "client",
@@ -61,7 +77,9 @@ export default function broilerplate(
     target,
     plugins: [],
     rules: [],
-    config: {},
+    config: {
+      devtool: false
+    },
     debug: false,
     paths: pathsFromRootPath(rootPath)
   };
@@ -69,9 +87,27 @@ export default function broilerplate(
   return bp;
 }
 
+export const whenModeIs = curry((mode: BroilerplateMode, modifier: Arity1Fn) =>
+  ifElse(bp => bp.mode === mode, modifier, nthArg(0))
+);
+
+export const whenDevelopment = whenModeIs("development");
+
+export const whenProduction = whenModeIs("production");
+
 export const setDebug = curry((value: boolean, bp: BroilerplateContext) => {
   return set(lensProp("debug"), value, bp);
 });
+
+export const setContext = curry((path: string, bp: BroilerplateContext) => {
+  return set(contextLens, path, bp);
+});
+
+export const setDevtool = curry(
+  (devtool: webpack.Options.Devtool | false, bp: BroilerplateContext) => {
+    return set(devtoolLens, devtool, bp);
+  }
+);
 
 export const addEntrypoint = curry(
   (name: string, file: string, bp: BroilerplateContext) => {

@@ -1,0 +1,31 @@
+{
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "name": "@dr-kobros/webpack-broilerplate-emotion",
+  "version": "0.1.8",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@dr-kobros/webpack-broilerplate": "^0.1.8"
+  },
+  "peerDependencies": {
+    "@emotion/babel-preset-css-prop": "^10.0.27",
+    "@emotion/core": "^10.0.27",
+    "@emotion/styled": "^10.0.27"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.0"
+  },
+  "scripts": {
+    "prepare": "yarn run build",
+    "clean": "rimraf dist",
+    "prebuild": "tsc && yarn run clean",
+    "build": "BABEL_ENV=build babel src --out-dir dist --source-maps --extensions .ts,.tsx --delete-dir-on-start --config-file ../../babel.config.js --no-comments",
+    "build:declarations": "tsc --project ./tsconfig.build.json",
+    "postbuild": "yarn build:declarations"
+  },
+  "gitHead": "5b887a843504ce5a6f0081476a18cdd66fcb5080"
+}

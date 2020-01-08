@@ -1,13 +1,14 @@
 import path from "path";
 import fs from "fs";
-import { pipe } from "ramda";
+import { pipe, compose, curry, over, lensPath, append } from "ramda";
 import {
   BroilerplateContext,
   BroilerplateMode,
-  BroilerplateTarget
+  BroilerplateTarget,
+  RuleDefinition
 } from "../index";
-import { addRule, RuleDefinition } from "../rules";
-import { Rule, RuleSetRule } from "webpack";
+import { addRule, updateRule } from "../rules";
+import { RuleSetRule } from "webpack";
 
 const getBrowsers = (configFilePath: string): string[] => {
   const browserFile = fs.readFileSync(
@@ -70,7 +71,7 @@ const getOptions = (
   };
 };
 
-export const identifier = Symbol("babelFeature");
+export const identifier = Symbol("babelRule");
 
 const babelFeature = () => (bp: BroilerplateContext): BroilerplateContext => {
   const babelDefinition: RuleDefinition = {
@@ -92,5 +93,41 @@ const babelFeature = () => (bp: BroilerplateContext): BroilerplateContext => {
   const feature = pipe(addRule(babelDefinition));
   return feature(bp);
 };
+
+export const pushBabelPreset = curry(
+  (
+    babelPreset: string | [string, object],
+    bp: BroilerplateContext
+  ): BroilerplateContext => {
+    return updateRule(
+      r => r.identifier === identifier,
+      rule => {
+        return {
+          ...rule,
+          factory: pipe(rule.factory, config => {
+            return over(
+              lensPath(["use", 0, "options", "presets"]),
+              append(babelPreset)
+            )(config);
+          })
+        };
+      },
+      bp
+    );
+  }
+);
+
+/*
+.updateIn(["use", 0, "options", "presets"], p => {
+  return p.push(
+    List.of(
+      "@emotion/babel-preset-css-prop",
+      Map({
+        sourceMap: env === "development"
+      })
+    )
+  );
+});
+*/
 
 export default babelFeature;

@@ -1,24 +1,28 @@
-import { curry, lensPath, over, adjust, findIndex, lensProp } from "ramda";
-import { BroilerplateContext, addDefinition, AddableDefinition } from "./index";
+import {
+  curry,
+  lensPath,
+  over,
+  adjust,
+  findIndex,
+  lensProp,
+  ifElse
+} from "ramda";
+import { BroilerplateContext, addDefinition, RuleDefinition } from "./index";
 import { RuleSetRule } from "webpack";
-
-export interface RuleDefinition extends AddableDefinition {
-  factory: (config: unknown) => RuleSetRule;
-}
 
 export const addRule = curry(
   (definition: RuleDefinition, bp: BroilerplateContext) =>
     addDefinition(lensPath(["rules"]), definition, bp)
 );
 
-export const buildRule = (loader: RuleDefinition): RuleSetRule => {
-  return loader.factory(loader.config);
+export const buildRule = (rule: RuleDefinition): RuleSetRule => {
+  return rule.factory(rule.config);
 };
 
-export const updateLoader = curry(
+export const updateRule = curry(
   (
-    findPredicate: (loader: RuleDefinition) => boolean,
-    updater: (loader: RuleDefinition) => RuleDefinition,
+    findPredicate: (rule: RuleDefinition) => boolean,
+    updater: (rule: RuleDefinition) => RuleDefinition,
     bp: BroilerplateContext
   ): BroilerplateContext => {
     return over(

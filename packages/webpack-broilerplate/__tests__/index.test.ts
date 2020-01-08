@@ -2,7 +2,12 @@ import broilerplate, {
   BroilerplateMode,
   addEntrypoint,
   removeEntrypoint,
-  setDebug
+  setDebug,
+  setContext,
+  setDevtool,
+  whenDevelopment,
+  whenProduction,
+  BroilerplateContext
 } from "../src/index";
 import { pipe } from "ramda";
 import util from "util";
@@ -37,6 +42,56 @@ test("adds entry point", () => {
   const bp2 = addEntrypoint("main", "main.js", bp);
 
   expect(bp2.config.entry?.["main"]).toBe("main.js");
+});
+
+test("sets context", () => {
+  const bp = broilerplate("development");
+  const bp2 = setContext("/tussi", bp);
+
+  expect(bp2.config.context).toEqual("/tussi");
+});
+
+test("sets devtool", () => {
+  const bp = broilerplate("development");
+  expect(bp.config.devtool).toBe(false);
+
+  const bp2 = setDevtool("cheap-eval-source-map", bp);
+  expect(bp2.config.devtool).toBe("cheap-eval-source-map");
+});
+
+test("sets devtool when in development", () => {
+  const paip = pipe(broilerplate, whenDevelopment(setDevtool("eval")));
+
+  const dev: BroilerplateContext = paip("development");
+  const prod: BroilerplateContext = paip("production");
+
+  expect(dev.config.devtool).toBe("eval");
+  expect(prod.config.devtool).toEqual(false);
+});
+
+test("composes settings when in production", () => {
+  const paip2 = pipe(setDevtool("eval"), addEntrypoint("index", "index.ts"));
+
+  const paip = pipe(broilerplate, whenProduction(paip2));
+
+  const dev: BroilerplateContext = paip("development");
+  const prod: BroilerplateContext = paip("production");
+
+  expect(dev.config.devtool).toBe(false);
+  expect(dev.config.entry).toBe(undefined);
+
+  expect(prod.config.devtool).toEqual("eval");
+  expect(prod.config.entry).toEqual({ index: "index.ts" });
+});
+
+test("sets devtool when in development", () => {
+  const paip = pipe(broilerplate, whenDevelopment(setDevtool("eval")));
+
+  const dev: BroilerplateContext = paip("development");
+  const prod: BroilerplateContext = paip("production");
+
+  expect(dev.config.devtool).toBe("eval");
+  expect(prod.config.devtool).toEqual(false);
 });
 
 test("removes entry point", () => {

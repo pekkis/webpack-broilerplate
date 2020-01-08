@@ -1,10 +1,6 @@
 import { curry, lensPath } from "ramda";
-import { BroilerplateContext, addDefinition, AddableDefinition } from ".";
+import { BroilerplateContext, addDefinition, PluginDefinition } from "./index";
 import { Plugin } from "webpack";
-
-export interface PluginDefinition extends AddableDefinition {
-  factory: (options: unknown) => Plugin;
-}
 
 export const addPlugin = curry(
   (pluginDefinition: PluginDefinition, bp: BroilerplateContext) =>
