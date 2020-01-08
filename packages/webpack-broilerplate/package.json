@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@dr-kobros/webpack-broilerplate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "license": "MIT",
