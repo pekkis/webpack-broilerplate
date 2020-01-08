@@ -11,7 +11,7 @@ import {
   set
 } from "ramda";
 import { buildPlugin, PluginDefinition } from "./plugins";
-import { buildRuleset, RulesetDefinition } from "./rulesets";
+import { buildRule, RuleDefinition } from "./rules";
 import { pathsFromRootPath } from "./paths";
 
 export type BroilerplateMode = "development" | "production";
@@ -40,7 +40,7 @@ export interface BroilerplateContext {
   mode: BroilerplateMode;
   target: BroilerplateTarget;
   plugins: Array<PluginDefinition>;
-  rulesets: Array<RulesetDefinition>;
+  rules: Array<RuleDefinition>;
   config: Partial<webpack.Configuration>;
   paths: BroilerplatePaths;
   debug: boolean;
@@ -60,7 +60,7 @@ export default function broilerplate(
     mode,
     target,
     plugins: [],
-    rulesets: [],
+    rules: [],
     config: {},
     debug: false,
     paths: pathsFromRootPath(rootPath)
@@ -94,6 +94,6 @@ export const build = (bp: BroilerplateContext): webpack.Configuration => ({
   mode: bp.mode,
   plugins: map(buildPlugin, bp.plugins),
   module: {
-    rules: map(buildRuleset, bp.rulesets)
+    rules: map(buildRule, bp.rules)
   }
 });

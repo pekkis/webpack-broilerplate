@@ -1,24 +1,24 @@
 import broilerplate from "../src";
 import { compose } from "ramda";
-import { RulesetDefinition, addRuleset, updateLoader } from "../src/rulesets";
+import { RuleDefinition, addRule, updateLoader } from "../src/rules";
 
 test("adds a loader", () => {
-  const definition: RulesetDefinition = {
+  const definition: RuleDefinition = {
     factory: () => {
       return {};
     }
   };
 
-  const bp = compose(addRuleset(definition))(broilerplate("development"));
+  const bp = compose(addRule(definition))(broilerplate("development"));
 
-  expect(bp.rulesets.length).toEqual(1);
-  expect(bp.rulesets[0]).toBe(definition);
+  expect(bp.rules.length).toEqual(1);
+  expect(bp.rules[0]).toBe(definition);
 });
 
 test("modifies a loader", () => {
   const id = Symbol("puuppa");
 
-  const definition: RulesetDefinition = {
+  const definition: RuleDefinition = {
     identifier: id,
     factory: () => {
       return {};
@@ -28,7 +28,7 @@ test("modifies a loader", () => {
     }
   };
 
-  const definition2: RulesetDefinition = {
+  const definition2: RuleDefinition = {
     identifier: Symbol("puupero"),
     factory: () => {
       return {};
@@ -39,15 +39,15 @@ test("modifies a loader", () => {
   };
 
   const bp = broilerplate("development");
-  const bp2 = compose(addRuleset(definition), addRuleset(definition2))(bp);
+  const bp2 = compose(addRule(definition), addRule(definition2))(bp);
 
-  expect(bp2.rulesets.length).toBe(2);
+  expect(bp2.rules.length).toBe(2);
 
   const mock = jest.fn(l => l);
 
   const bp3 = updateLoader(l => l.identifier === id, mock, bp2);
 
-  expect(bp3.rulesets.length).toBe(2);
+  expect(bp3.rules.length).toBe(2);
   expect(bp3).not.toBe(bp2);
   expect(mock).toHaveBeenCalledWith(definition);
   expect(mock).toHaveBeenCalledTimes(1);
@@ -58,7 +58,7 @@ test("not found does not modify anything", () => {
 
   const notFoundId = Symbol("notfound");
 
-  const definition: RulesetDefinition = {
+  const definition: RuleDefinition = {
     identifier: id,
     factory: () => {
       return {};
@@ -69,7 +69,7 @@ test("not found does not modify anything", () => {
   };
 
   const bp = broilerplate("development");
-  const bp2 = addRuleset(definition)(bp);
+  const bp2 = addRule(definition)(bp);
 
   const mock = jest.fn(l => l);
 
@@ -77,5 +77,5 @@ test("not found does not modify anything", () => {
   expect(mock).not.toHaveBeenCalled();
 
   expect(bp3).not.toBe(bp2);
-  expect(bp2.rulesets).toBe(bp3.rulesets);
+  expect(bp2.rules).toBe(bp3.rules);
 });

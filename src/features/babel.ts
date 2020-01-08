@@ -6,7 +6,8 @@ import {
   BroilerplateMode,
   BroilerplateTarget
 } from "../index";
-import { addRuleset, RulesetDefinition } from "../rulesets";
+import { addRule, RuleDefinition } from "../rules";
+import { Rule, RuleSetRule } from "webpack";
 
 const getBrowsers = (configFilePath: string): string[] => {
   const browserFile = fs.readFileSync(
@@ -72,9 +73,9 @@ const getOptions = (
 export const identifier = Symbol("babelFeature");
 
 const babelFeature = () => (bp: BroilerplateContext): BroilerplateContext => {
-  const babelDefinition: RulesetDefinition = {
+  const babelDefinition: RuleDefinition = {
     identifier,
-    factory: () => {
+    factory: (): RuleSetRule => {
       return {
         test: /\.(js|jsx|ts|tsx)$/,
         use: [
@@ -88,7 +89,7 @@ const babelFeature = () => (bp: BroilerplateContext): BroilerplateContext => {
     }
   };
 
-  const feature = pipe(addRuleset(babelDefinition));
+  const feature = pipe(addRule(babelDefinition));
   return feature(bp);
 };
 
