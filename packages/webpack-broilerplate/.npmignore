@@ -1,0 +1,9 @@
+src/
+__tests__/
+__test-app__/
+__empty-app__/
+.babelrc
+.eslintrc
+/.gitignore
+yarn.lock
+.git/

@@ -14,5 +14,5 @@
     }
   },
   "include": ["packages"],
-  "exclude": ["node_modules", "**/*.story.*", "**/*.test.*", "dist"]
+  "exclude": ["node_modules"]
 }

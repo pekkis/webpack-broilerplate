@@ -1,0 +1,26 @@
+{
+  "private": false,
+  "name": "@dr-kobros/webpack-broilerplate",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "ramda": "^0.26.1",
+    "webpack": "^4.41.5"
+  },
+  "peerDependencies": {
+    "babel-loader": "^8.0.6"
+  },
+  "devDependencies": {
+    "babel-loader": "^8.0.6",
+    "rimraf": "^3.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "tsc && yarn run clean",
+    "build": "BABEL_ENV=build babel src --out-dir dist --source-maps --extensions .ts,.tsx --delete-dir-on-start --config-file ../../babel.config.js --no-comments",
+    "build:declarations": "lerna exec --parallel 'tsc --project ./tsconfig.build.json'",
+    "postbuild": "yarn build:declarations"
+  }
+}

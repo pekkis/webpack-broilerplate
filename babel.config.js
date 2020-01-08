@@ -21,6 +21,19 @@ module.exports = api => {
       "@babel/plugin-proposal-optional-chaining",
       "@babel/plugin-proposal-object-rest-spread",
       "@babel/plugin-proposal-nullish-coalescing-operator"
-    ]
+    ],
+    env: {
+      build: {
+        ignore: [
+          "**/*.test.tsx",
+          "**/*.test.ts",
+          "**/*.story.tsx",
+          "__snapshots__",
+          "__tests__",
+          "__stories__"
+        ]
+      }
+    },
+    ignore: ["node_modules"]
   };
 };
