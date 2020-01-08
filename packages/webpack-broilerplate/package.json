@@ -1,7 +1,10 @@
 {
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@dr-kobros/webpack-broilerplate",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "license": "MIT",
@@ -23,5 +26,6 @@
     "build": "BABEL_ENV=build babel src --out-dir dist --source-maps --extensions .ts,.tsx --delete-dir-on-start --config-file ../../babel.config.js --no-comments",
     "build:declarations": "lerna exec --parallel 'tsc --project ./tsconfig.build.json'",
     "postbuild": "yarn build:declarations"
-  }
+  },
+  "gitHead": "0b1ca0f6c07dd7bd74f2c3c388d0b9424099c77e"
 }
