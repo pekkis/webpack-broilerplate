@@ -4,7 +4,7 @@
     "access": "public"
   },
   "name": "@dr-kobros/webpack-broilerplate",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "license": "MIT",
@@ -27,5 +27,5 @@
     "build:declarations": "lerna exec --parallel 'tsc --project ./tsconfig.build.json'",
     "postbuild": "yarn build:declarations"
   },
-  "gitHead": "0b1ca0f6c07dd7bd74f2c3c388d0b9424099c77e"
+  "gitHead": "5b887a843504ce5a6f0081476a18cdd66fcb5080"
 }
