@@ -22,8 +22,7 @@
   "scripts": {
     "prepare": "yarn run build",
     "clean": "rimraf dist",
-    "prebuild": "tsc && yarn run clean",
-    "build": "BABEL_ENV=build babel src --out-dir dist --source-maps --extensions .ts,.tsx --delete-dir-on-start --config-file ../../babel.config.js --no-comments",
+    "build": "BABEL_ENV=build babel src --out-dir dist --source-maps --extensions .ts,.tsx --config-file ../../babel.config.js --no-comments",
     "build:declarations": "tsc --project ./tsconfig.build.json",
     "postbuild": "yarn build:declarations"
   },
