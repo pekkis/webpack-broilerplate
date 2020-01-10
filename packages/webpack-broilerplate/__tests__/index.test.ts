@@ -7,7 +7,8 @@ import broilerplate, {
   setDevtool,
   whenDevelopment,
   whenProduction,
-  BroilerplateContext
+  BroilerplateContext,
+  pathsFromRootPath
 } from "../src/index";
 import { pipe } from "ramda";
 import util from "util";
@@ -23,6 +24,16 @@ test("broilerplate mode initializes correctly", () => {
   });
 });
 
+test("creates paths from root path", () => {
+  const paths = pathsFromRootPath("/tussihovi");
+
+  expect(paths).toEqual({
+    root: "/tussihovi",
+    modules: "/tussihovi/node_modules",
+    build: "/tussihovi/dist"
+  });
+});
+
 test("paths initialize correctly by default", () => {
   const bp = broilerplate("development");
   expect(bp.paths.root).toEqual(process.cwd());
@@ -31,7 +42,7 @@ test("paths initialize correctly by default", () => {
 });
 
 test("paths initialize correctly with override", () => {
-  const bp = broilerplate("development", "client", "/tussi");
+  const bp = broilerplate("development", pathsFromRootPath("/tussi"));
   expect(bp.paths.root).toEqual("/tussi");
   expect(bp.paths.build).toEqual(`/tussi/dist`);
   expect(bp.paths.modules).toEqual(`/tussi/node_modules`);

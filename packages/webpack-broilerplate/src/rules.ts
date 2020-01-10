@@ -1,12 +1,4 @@
-import {
-  curry,
-  lensPath,
-  over,
-  adjust,
-  findIndex,
-  lensProp,
-  ifElse
-} from "ramda";
+import { curry, lensPath, over, adjust, findIndex, lensProp } from "ramda";
 import { BroilerplateContext, addDefinition, RuleDefinition } from "./index";
 import { RuleSetRule } from "webpack";
 
@@ -24,19 +16,26 @@ export const updateRule = curry(
     findPredicate: (rule: RuleDefinition) => boolean,
     updater: (rule: RuleDefinition) => RuleDefinition,
     bp: BroilerplateContext
-  ): BroilerplateContext => {
-    return over(
+  ): BroilerplateContext =>
+    over(
       lensProp("rules"),
       (rules: RuleDefinition[]) => {
         const foundIndex = findIndex(findPredicate, rules);
 
         if (foundIndex === -1) {
-          return rules;
+          throw new Error("Rule not found");
         }
 
         return adjust(foundIndex, updater, rules);
       },
       bp
-    );
-  }
+    )
+);
+export const updateRuleConfig = curry(
+  (
+    findPredicate: (rule: RuleDefinition) => boolean,
+    updater: (config: any) => RuleDefinition,
+    bp: BroilerplateContext
+  ): BroilerplateContext =>
+    updateRule(findPredicate, over(lensProp("config"), updater), bp)
 );

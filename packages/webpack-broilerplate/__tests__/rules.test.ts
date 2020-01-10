@@ -53,7 +53,7 @@ test("modifies a loader", () => {
   expect(mock).toHaveBeenCalledTimes(1);
 });
 
-test("not found does not modify anything", () => {
+test("not found rule throws", () => {
   const id = Symbol("puuppa");
 
   const notFoundId = Symbol("notfound");
@@ -73,9 +73,7 @@ test("not found does not modify anything", () => {
 
   const mock = jest.fn(l => l);
 
-  const bp3 = updateRule(l => l.identifier === notFoundId, mock, bp2);
-  expect(mock).not.toHaveBeenCalled();
-
-  expect(bp3).not.toBe(bp2);
-  expect(bp2.rules).toBe(bp3.rules);
+  expect(() =>
+    updateRule(l => l.identifier === notFoundId, mock, bp2)
+  ).toThrowError("Rule not found");
 });

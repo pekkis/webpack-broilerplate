@@ -1,18 +1,21 @@
 import path from "path";
 import fs from "fs";
-import { pipe, compose, curry, over, lensPath, append } from "ramda";
+import { pipe, curry, over, lensPath, append, type } from "ramda";
 import {
   BroilerplateContext,
   BroilerplateMode,
-  BroilerplateTarget,
   RuleDefinition
 } from "../index";
-import { addRule, updateRule } from "../rules";
+import { addRule, updateRuleConfig } from "../rules";
 import { RuleSetRule } from "webpack";
 
-const getBrowsers = (configFilePath: string): string[] => {
+const getBrowsers = (browsers: BrowsersConfig): string[] => {
+  if (type(browsers) === "Array") {
+    return browsers as string[];
+  }
+
   const browserFile = fs.readFileSync(
-    path.resolve(configFilePath, ".browserslistrc"),
+    path.resolve(browsers as string, ".browserslistrc"),
     {
       encoding: "utf-8"
     }
@@ -23,22 +26,9 @@ const getBrowsers = (configFilePath: string): string[] => {
     .filter(b => b);
 };
 
-const getTargets = (target: BroilerplateTarget, configFilePath: string) => {
-  if (target === "client") {
-    return {
-      browsers: getBrowsers(configFilePath)
-    };
-  }
-
-  return {
-    node: "current"
-  };
-};
-
 const getOptions = (
   mode: BroilerplateMode,
-  target: BroilerplateTarget,
-  configFilePath: string,
+  browsers: string[],
   isDebug: boolean
 ): object => {
   return {
@@ -50,7 +40,9 @@ const getOptions = (
         {
           debug: isDebug,
           useBuiltIns: "usage",
-          targets: getTargets(target, configFilePath),
+          targets: {
+            browsers
+          },
           modules: false,
           corejs: 3
         }
@@ -73,16 +65,38 @@ const getOptions = (
 
 export const identifier = Symbol("babelRule");
 
-const babelFeature = () => (bp: BroilerplateContext): BroilerplateContext => {
-  const babelDefinition: RuleDefinition = {
+type BrowsersConfig = string | string[];
+
+interface Config {
+  browsers: BrowsersConfig;
+}
+
+interface RuleConfig {
+  options: object;
+  test: RegExp;
+}
+
+interface BabelRuleDefinition extends RuleDefinition {
+  config: RuleConfig;
+  factory: (config: RuleConfig) => RuleSetRule;
+}
+
+const babelFeature = (config: Config) => (
+  bp: BroilerplateContext
+): BroilerplateContext => {
+  const babelDefinition: BabelRuleDefinition = {
     identifier,
-    factory: (): RuleSetRule => {
+    config: {
+      options: getOptions(bp.mode, getBrowsers(config.browsers), bp.debug),
+      test: /\.(js|jsx|ts|tsx)$/
+    },
+    factory: (config: RuleConfig): RuleSetRule => {
       return {
-        test: /\.(js|jsx|ts|tsx)$/,
+        test: config.test,
         use: [
           {
             loader: "babel-loader",
-            options: getOptions(bp.mode, bp.target, bp.paths.root, bp.debug)
+            options: config.options
           }
         ],
         exclude: [bp.paths.modules]
@@ -99,19 +113,9 @@ export const pushBabelPreset = curry(
     babelPreset: string | [string, object],
     bp: BroilerplateContext
   ): BroilerplateContext => {
-    return updateRule(
+    return updateRuleConfig(
       r => r.identifier === identifier,
-      rule => {
-        return {
-          ...rule,
-          factory: pipe(rule.factory, config => {
-            return over(
-              lensPath(["use", 0, "options", "presets"]),
-              append(babelPreset)
-            )(config);
-          })
-        };
-      },
+      over(lensPath(["options", "presets"]), append(babelPreset)),
       bp
     );
   }

@@ -12,17 +12,16 @@ import {
   ifElse,
   always,
   Arity1Fn,
-  nthArg
+  nthArg,
+  mergeRight
 } from "ramda";
 import { buildPlugin } from "./plugins";
 import { buildRule } from "./rules";
-import { pathsFromRootPath } from "./paths";
+import path from "path";
 
 export { pipe } from "ramda";
 
 export type BroilerplateMode = "development" | "production";
-
-export type BroilerplateTarget = "client" | "server";
 
 export const broilerPlateSymbol = Symbol("broilerplate");
 
@@ -39,6 +38,7 @@ export const devtoolLens = lensPath(["config", "devtool"]);
 
 export interface BroilerplatePaths {
   root: string;
+  src: string;
   build: string;
   modules: string;
 }
@@ -46,7 +46,6 @@ export interface BroilerplatePaths {
 export interface BroilerplateContext {
   [broilerPlateSymbol]: true;
   mode: BroilerplateMode;
-  target: BroilerplateTarget;
   plugins: Array<PluginDefinition>;
   rules: Array<RuleDefinition>;
   config: Partial<webpack.Configuration>;
@@ -55,33 +54,57 @@ export interface BroilerplateContext {
 }
 
 export interface RuleDefinition extends AddableDefinition {
-  factory: (config: unknown) => RuleSetRule;
+  factory: (config: any) => RuleSetRule;
 }
 
 export interface PluginDefinition extends AddableDefinition {
-  factory: (options: unknown) => Plugin;
+  factory: (config: any) => Plugin;
 }
+
+interface BroilerplateOptions {
+  debug: boolean;
+}
+
+export const pathsFromRootPath = (rootPath: string): BroilerplatePaths => ({
+  root: rootPath,
+  src: path.resolve(rootPath, "./src"),
+  build: path.resolve(rootPath, "./dist"),
+  modules: path.resolve(rootPath, "./node_modules")
+});
+
+const defaultOptions: BroilerplateOptions = {
+  debug: false
+};
 
 export default function broilerplate(
   mode: BroilerplateMode,
-  target: BroilerplateTarget = "client",
-  rootPath: string = process.cwd()
+  paths: BroilerplatePaths = pathsFromRootPath(process.cwd()),
+  options: Partial<BroilerplateOptions> = defaultOptions
 ): BroilerplateContext {
   if (!["development", "production"].includes(mode)) {
     throw new Error("Invalid broilerplate mode");
   }
 
+  const mergedOptions: BroilerplateOptions = mergeRight(
+    defaultOptions,
+    options
+  );
+
   const bp: BroilerplateContext = {
     [broilerPlateSymbol]: true,
     mode,
-    target,
     plugins: [],
     rules: [],
     config: {
-      devtool: false
+      devtool: false,
+      optimization: {
+        noEmitOnErrors: true,
+        nodeEnv: false,
+        mergeDuplicateChunks: true
+      }
     },
-    debug: false,
-    paths: pathsFromRootPath(rootPath)
+    debug: mergedOptions.debug,
+    paths
   };
 
   return bp;
