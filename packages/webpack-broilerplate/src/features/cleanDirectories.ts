@@ -2,7 +2,7 @@ import { BroilerplateContext, PluginDefinition } from "../index";
 import { addPlugin } from "../plugins";
 import { CleanWebpackPlugin, Options } from "clean-webpack-plugin";
 
-const caseSensitivePaths = (config?: Options) => (
+const cleanDirectories = (config?: Options) => (
   bp: BroilerplateContext
 ): BroilerplateContext => {
   const definition: PluginDefinition = {
@@ -12,4 +12,4 @@ const caseSensitivePaths = (config?: Options) => (
   return addPlugin(definition)(bp);
 };
 
-export default caseSensitivePaths;
+export default cleanDirectories;

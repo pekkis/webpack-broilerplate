@@ -1,14 +1,14 @@
 import { BroilerplateContext, whenProduction, whenDevelopment } from "../index";
 import { pipe } from "ramda";
 import configOptimization from "./configOptimization";
-import coreJSUpgrade from "./coreJSUpgrade";
+//import coreJSUpgrade from "./coreJSUpgrade"; does not work, sigh, some require magicks
 import caseSensitivePaths from "./caseSensitivePaths";
 import environmentVariables from "./environmentVariables";
 import cleanDirectories from "./cleanDirectories";
 import watchMissingNodeModules from "./watchMissingNodeModules";
 
 const sanePlugins = pipe(
-  coreJSUpgrade(),
+  // coreJSUpgrade(),
   caseSensitivePaths(),
   environmentVariables(),
   whenDevelopment(watchMissingNodeModules()),
