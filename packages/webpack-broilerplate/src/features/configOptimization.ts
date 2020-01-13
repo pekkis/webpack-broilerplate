@@ -24,7 +24,7 @@ const defaultConfig: Partial<webpack.Options.Optimization> = {
 
 const configOptimization = (
   config: Partial<webpack.Options.Optimization> = {}
-) => (bp: BroilerplateContext) => {
+) => (bp: BroilerplateContext): BroilerplateContext => {
   const mergedConfig = mergeDeepRight(defaultConfig, config);
   return over(
     lensPath(["config", "optimization"]),

@@ -1,14 +1,14 @@
 import { BroilerplateContext, PluginDefinition } from "../index";
-import { addPlugin } from "../plugins";
+import { addPlugin, createPluginDefinition } from "../plugins";
 import { CleanWebpackPlugin, Options } from "clean-webpack-plugin";
 
 const cleanDirectories = (config?: Options) => (
   bp: BroilerplateContext
 ): BroilerplateContext => {
-  const definition: PluginDefinition = {
-    factory: () => new CleanWebpackPlugin(config)
-  };
-
+  const definition = createPluginDefinition(
+    c => new CleanWebpackPlugin(c),
+    config
+  );
   return addPlugin(definition)(bp);
 };
 

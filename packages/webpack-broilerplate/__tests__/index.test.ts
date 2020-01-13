@@ -30,7 +30,8 @@ test("creates paths from root path", () => {
   expect(paths).toEqual({
     root: "/tussihovi",
     modules: "/tussihovi/node_modules",
-    build: "/tussihovi/dist"
+    build: "/tussihovi/dist",
+    src: "/tussihovi/src"
   });
 });
 

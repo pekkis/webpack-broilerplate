@@ -19,17 +19,19 @@ import { buildPlugin } from "./plugins";
 import { buildRule } from "./rules";
 import path from "path";
 
+export { addRule } from "./rules";
+export { addPlugin, createPluginDefinition } from "./plugins";
+
 export { pipe } from "ramda";
 
 export type BroilerplateMode = "development" | "production";
 
 export const broilerPlateSymbol = Symbol("broilerplate");
 
-export interface AddableDefinition {
+export interface AddableDefinition<C> {
   priority?: number;
   identifier?: symbol;
-  factory: (options: any) => any;
-  config?: any;
+  config?: C;
 }
 
 export const entryPointsLens = lensPath(["config", "entry"]);
@@ -46,19 +48,19 @@ export interface BroilerplatePaths {
 export interface BroilerplateContext {
   [broilerPlateSymbol]: true;
   mode: BroilerplateMode;
-  plugins: Array<PluginDefinition>;
-  rules: Array<RuleDefinition>;
+  plugins: Array<PluginDefinition<unknown | undefined>>;
+  rules: Array<RuleDefinition<unknown | undefined>>;
   config: Partial<webpack.Configuration>;
   paths: BroilerplatePaths;
   debug: boolean;
 }
 
-export interface RuleDefinition extends AddableDefinition {
-  factory: (config: any) => RuleSetRule;
+export interface RuleDefinition<C = undefined> extends AddableDefinition<C> {
+  factory: (config: C) => RuleSetRule;
 }
 
-export interface PluginDefinition extends AddableDefinition {
-  factory: (config: any) => Plugin;
+export interface PluginDefinition<C = undefined> extends AddableDefinition<C> {
+  factory: (config: C) => Plugin;
 }
 
 interface BroilerplateOptions {
@@ -148,8 +150,11 @@ export const removeEntrypoint = curry((name, bp) =>
 );
 
 export const addDefinition = curry(
-  (lens: Lens, definition: AddableDefinition, bp: BroilerplateContext) =>
-    over(lens, definitionList => append(definition, definitionList), bp)
+  (
+    lens: Lens,
+    definition: AddableDefinition<unknown>,
+    bp: BroilerplateContext
+  ) => over(lens, definitionList => append(definition, definitionList), bp)
 );
 
 export const build = (bp: BroilerplateContext): webpack.Configuration => ({

@@ -3,23 +3,23 @@ import { BroilerplateContext, addDefinition, RuleDefinition } from "./index";
 import { RuleSetRule } from "webpack";
 
 export const addRule = curry(
-  (definition: RuleDefinition, bp: BroilerplateContext) =>
+  (definition: RuleDefinition<any>, bp: BroilerplateContext) =>
     addDefinition(lensPath(["rules"]), definition, bp)
 );
 
-export const buildRule = (rule: RuleDefinition): RuleSetRule => {
+export const buildRule = (rule: RuleDefinition<any>): RuleSetRule => {
   return rule.factory(rule.config);
 };
 
 export const updateRule = curry(
   (
-    findPredicate: (rule: RuleDefinition) => boolean,
-    updater: (rule: RuleDefinition) => RuleDefinition,
+    findPredicate: (rule: RuleDefinition<any>) => boolean,
+    updater: (rule: RuleDefinition<any>) => RuleDefinition,
     bp: BroilerplateContext
   ): BroilerplateContext =>
     over(
       lensProp("rules"),
-      (rules: RuleDefinition[]) => {
+      (rules: RuleDefinition<any>[]) => {
         const foundIndex = findIndex(findPredicate, rules);
 
         if (foundIndex === -1) {
@@ -31,11 +31,11 @@ export const updateRule = curry(
       bp
     )
 );
-export const updateRuleConfig = curry(
-  (
-    findPredicate: (rule: RuleDefinition) => boolean,
-    updater: (config: any) => RuleDefinition,
-    bp: BroilerplateContext
-  ): BroilerplateContext =>
-    updateRule(findPredicate, over(lensProp("config"), updater), bp)
-);
+
+export function updateRuleConfig(
+  findPredicate: (rule: RuleDefinition<any>) => boolean,
+  updater: (config: any) => RuleDefinition,
+  bp: BroilerplateContext
+): BroilerplateContext {
+  return updateRule(findPredicate, over(lensProp("config"), updater), bp);
+}

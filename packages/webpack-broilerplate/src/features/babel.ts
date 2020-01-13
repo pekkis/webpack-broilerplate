@@ -76,21 +76,16 @@ interface RuleConfig {
   test: RegExp;
 }
 
-interface BabelRuleDefinition extends RuleDefinition {
-  config: RuleConfig;
-  factory: (config: RuleConfig) => RuleSetRule;
-}
-
 const babelFeature = (config: Config) => (
   bp: BroilerplateContext
 ): BroilerplateContext => {
-  const babelDefinition: BabelRuleDefinition = {
+  const babelDefinition: RuleDefinition<RuleConfig> = {
     identifier,
     config: {
       options: getOptions(bp.mode, getBrowsers(config.browsers), bp.debug),
       test: /\.(js|jsx|ts|tsx)$/
     },
-    factory: (config: RuleConfig): RuleSetRule => {
+    factory: (config): RuleSetRule => {
       return {
         test: config.test,
         use: [
@@ -120,18 +115,5 @@ export const pushBabelPreset = curry(
     );
   }
 );
-
-/*
-.updateIn(["use", 0, "options", "presets"], p => {
-  return p.push(
-    List.of(
-      "@emotion/babel-preset-css-prop",
-      Map({
-        sourceMap: env === "development"
-      })
-    )
-  );
-});
-*/
 
 export default babelFeature;

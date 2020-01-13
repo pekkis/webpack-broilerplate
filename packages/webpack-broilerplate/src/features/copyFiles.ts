@@ -7,10 +7,9 @@ type Config = string;
 const copyFiles = (config: string) => (
   bp: BroilerplateContext
 ): BroilerplateContext => {
-  const definition: PluginDefinition = {
+  const definition: PluginDefinition<Config> = {
     config,
-    factory: (config: Config) =>
-      new CopyWebpackPlugin([{ from: config, flatten: false }])
+    factory: (c: Config) => new CopyWebpackPlugin([{ from: c, flatten: false }])
   };
 
   return addPlugin(definition)(bp);

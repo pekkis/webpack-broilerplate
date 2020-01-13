@@ -1,5 +1,5 @@
 import { BroilerplateContext, PluginDefinition } from "../index";
-import { addPlugin } from "../plugins";
+import { addPlugin, createPluginDefinition } from "../plugins";
 import webpack from "webpack";
 import { pickBy } from "ramda";
 
@@ -12,15 +12,16 @@ const getEnvironmentVariables = (
 const environmentVariables = (prefix = "REACT_APP_") => (
   bp: BroilerplateContext
 ): BroilerplateContext => {
-  const definition: PluginDefinition = {
-    factory: () =>
+  const d = createPluginDefinition(
+    c =>
       new webpack.DefinePlugin({
         __DEVELOPMENT: bp.mode === "development",
-        ...getEnvironmentVariables(process.env, prefix)
-      })
-  };
+        ...getEnvironmentVariables(process.env, c)
+      }),
+    prefix
+  );
 
-  return addPlugin(definition)(bp);
+  return addPlugin(d)(bp);
 };
 
 export default environmentVariables;
