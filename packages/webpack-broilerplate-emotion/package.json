@@ -4,12 +4,12 @@
     "access": "public"
   },
   "name": "@dr-kobros/webpack-broilerplate-emotion",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@dr-kobros/webpack-broilerplate": "^0.1.10"
+    "@dr-kobros/webpack-broilerplate": "^0.1.11"
   },
   "peerDependencies": {
     "@emotion/babel-preset-css-prop": "^10.0.27",
