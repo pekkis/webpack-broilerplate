@@ -101,6 +101,10 @@ export default function broilerplate(
         noEmitOnErrors: true,
         nodeEnv: false,
         mergeDuplicateChunks: true
+      },
+      resolve: {
+        modules: [paths.modules],
+        extensions: [".js", ".ts", ".jsx", ".tsx"]
       }
     },
     debug: mergedOptions.debug,
