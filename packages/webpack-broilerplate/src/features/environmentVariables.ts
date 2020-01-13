@@ -1,24 +1,34 @@
-import { BroilerplateContext, PluginDefinition } from "../index";
+import { BroilerplateContext } from "../index";
 import { addPlugin, createPluginDefinition } from "../plugins";
 import webpack from "webpack";
-import { pickBy } from "ramda";
+import { pickBy, any } from "ramda";
+
+const hasPrefix = (prefixes: string[], value: string): boolean => {
+  return any(p => value.startsWith(p), prefixes);
+};
 
 const getEnvironmentVariables = (
   env: NodeJS.ProcessEnv,
-  prefix: string
+  prefix: string[],
+  whitelisted: string[]
 ): { [key: string]: string } =>
-  pickBy((v, k) => k === "NODE_ENV" || k.startsWith(prefix), env);
+  pickBy(
+    (v, k) =>
+      k === "NODE_ENV" || whitelisted.includes(v) || hasPrefix(prefix, v),
+    env
+  );
 
-const environmentVariables = (prefix = "REACT_APP_") => (
-  bp: BroilerplateContext
-): BroilerplateContext => {
+const environmentVariables = (
+  prefixes: string[] = ["REACT_APP_"],
+  whitelisted: string[] = []
+) => (bp: BroilerplateContext): BroilerplateContext => {
   const d = createPluginDefinition(
     c =>
       new webpack.DefinePlugin({
-        __DEVELOPMENT: bp.mode === "development",
-        ...getEnvironmentVariables(process.env, c)
+        __DEVELOPMENT__: bp.mode === "development",
+        ...getEnvironmentVariables(process.env, c.prefixes, c.whitelisted)
       }),
-    prefix
+    { prefixes, whitelisted }
   );
 
   return addPlugin(d)(bp);

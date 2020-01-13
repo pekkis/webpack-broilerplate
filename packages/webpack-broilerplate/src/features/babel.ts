@@ -9,26 +9,9 @@ import {
 import { addRule, updateRuleConfig } from "../rules";
 import { RuleSetRule } from "webpack";
 
-const getBrowsers = (browsers: BrowsersConfig): string[] => {
-  if (type(browsers) === "Array") {
-    return browsers as string[];
-  }
-
-  const browserFile = fs.readFileSync(
-    path.resolve(browsers as string, ".browserslistrc"),
-    {
-      encoding: "utf-8"
-    }
-  );
-  return browserFile
-    .split("\n")
-    .map(b => b.trim())
-    .filter(b => b);
-};
-
 const getOptions = (
   mode: BroilerplateMode,
-  browsers: string[],
+  browsers: BrowsersConfig,
   isDebug: boolean
 ): object => {
   return {
@@ -65,7 +48,7 @@ const getOptions = (
 
 export const identifier = Symbol("babelRule");
 
-type BrowsersConfig = string | string[];
+type BrowsersConfig = string[] | { [key: string]: string[] };
 
 interface Config {
   browsers: BrowsersConfig;
@@ -82,7 +65,7 @@ const babelFeature = (config: Config) => (
   const babelDefinition: RuleDefinition<RuleConfig> = {
     identifier,
     config: {
-      options: getOptions(bp.mode, getBrowsers(config.browsers), bp.debug),
+      options: getOptions(bp.mode, config.browsers, bp.debug),
       test: /\.(js|jsx|ts|tsx)$/
     },
     factory: (config): RuleSetRule => {
