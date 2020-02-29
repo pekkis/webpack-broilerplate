@@ -26,7 +26,10 @@ const environmentVariables = (
     c =>
       new webpack.DefinePlugin({
         __DEVELOPMENT__: bp.mode === "development",
-        ...getEnvironmentVariables(process.env, c.prefixes, c.whitelisted)
+        __PRODUCTION__: bp.mode === "production",
+        "process.env": JSON.stringify(
+          getEnvironmentVariables(process.env, c.prefixes, c.whitelisted)
+        )
       }),
     { prefixes, whitelisted }
   );
