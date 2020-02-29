@@ -1,7 +1,7 @@
 import { BroilerplateContext } from "../index";
 import { addPlugin, createPluginDefinition } from "../plugins";
 import webpack from "webpack";
-import { pickBy, any } from "ramda";
+import { pickBy, any, mapObjIndexed } from "ramda";
 
 const hasPrefix = (prefixes: string[], value: string): boolean => {
   return any(p => value.startsWith(p), prefixes);
@@ -11,12 +11,17 @@ const getEnvironmentVariables = (
   env: NodeJS.ProcessEnv,
   prefix: string[],
   whitelisted: string[]
-): { [key: string]: string } =>
-  pickBy(
+): { [key: string]: string } => {
+  const picked = pickBy(
     (v, k) =>
       k === "NODE_ENV" || whitelisted.includes(v) || hasPrefix(prefix, v),
     env
   );
+
+  return mapObjIndexed(v => {
+    return JSON.stringify(v);
+  }, picked);
+};
 
 const environmentVariables = (
   prefixes: string[] = ["REACT_APP_"],
@@ -27,8 +32,10 @@ const environmentVariables = (
       new webpack.DefinePlugin({
         __DEVELOPMENT__: bp.mode === "development",
         __PRODUCTION__: bp.mode === "production",
-        "process.env": JSON.stringify(
-          getEnvironmentVariables(process.env, c.prefixes, c.whitelisted)
+        "process.env": getEnvironmentVariables(
+          process.env,
+          c.prefixes,
+          c.whitelisted
         )
       }),
     { prefixes, whitelisted }
